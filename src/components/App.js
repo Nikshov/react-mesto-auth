@@ -1,26 +1,29 @@
-import React from 'react';
+import React from "react";
+import { Route, Switch } from "react-router-dom";
 import Header from "./Header";
 import Main from "./Main";
 import Footer from "./Footer";
 import ImagePopup from "./ImagePopup";
-import CurrentUserContext from '../contexts/CurrentUserContext';
-import api from '../utils/api';
-import EditProfilePopup from './EditProfilePopup';
-import EditAvatarPopup from './EditAvatarPopup';
-import AddPlacePopup from './AddPlacePopup';
-import ConfirmDeletePopup from './ConfirmDeletePopup';
-
-
+import CurrentUserContext from "../contexts/CurrentUserContext";
+import api from "../utils/api";
+import EditProfilePopup from "./EditProfilePopup";
+import EditAvatarPopup from "./EditAvatarPopup";
+import AddPlacePopup from "./AddPlacePopup";
+import ConfirmDeletePopup from "./ConfirmDeletePopup";
+import Login from "./Login";
+import Register from "./Register";
+import authApi from "../utils/authApi";
 
 //Реализацией валидации и индикаторов отправки данных сейчас занимаюсь. Но пока отправляю минимальный для сдачи проект.
 function App() {
-
   const [currentUser, setCurrentUser] = React.useState({});
   const [cards, setCards] = React.useState([]);
 
-  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
+  const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] =
+    React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
-  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
+  const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] =
+    React.useState(false);
   const [selectedCard, setSelectedCard] = React.useState({ isOpen: false });
   const [request, setRequest] = React.useState(true);
   const [deleteCard, setDeleteCard] = React.useState({ isOpen: false });
@@ -49,29 +52,36 @@ function App() {
 
   async function handleUpdateUser(data) {
     setRequest(false);
-    api.editUserInfo(data)
+    api
+      .editUserInfo(data)
       .then((data) => {
         setCurrentUser(data);
         closeAllPopups();
       })
       .catch((err) => console.error(err))
-      .finally(() => { setRequest(true) });
+      .finally(() => {
+        setRequest(true);
+      });
   }
 
   function handleUpdateAvatar(data) {
     setRequest(false);
-    api.editAvatar(data)
+    api
+      .editAvatar(data)
       .then((data) => {
         setCurrentUser(data);
-        closeAllPopups()
+        closeAllPopups();
       })
       .catch((err) => console.error(err))
-      .finally(() => { setRequest(true) });
+      .finally(() => {
+        setRequest(true);
+      });
   }
 
   function handleAddPlaceSubmit(data) {
     setRequest(false);
-    api.addNewCard(data)
+    api
+      .addNewCard(data)
       .then((newCard) => {
         setCards([newCard, ...cards]);
         closeAllPopups();
@@ -79,17 +89,21 @@ function App() {
       .catch((err) => {
         console.error(err);
       })
-      .finally(() => { setRequest(true) });
+      .finally(() => {
+        setRequest(true);
+      });
   }
 
   function handleCardLike(card, isLiked) {
     (isLiked ? api.deleteLike(card._id) : api.addLike(card._id))
       .then((newCard) => {
-        setCards((state) => state.map((c) => c._id === card._id ? newCard : c));
+        setCards((state) =>
+          state.map((c) => (c._id === card._id ? newCard : c))
+        );
       })
       .catch((err) => {
         console.error(err);
-      })
+      });
   }
 
   function handleCardDelete(card) {
@@ -98,9 +112,19 @@ function App() {
 
   function handleConfirmDelete(card) {
     setRequest(false);
-    api.deleteCard(card._id)
-      .then(() => setCards(cards.filter(item => item !== card)), (err) => console.error(err))
-      .finally(() => { setRequest(true) });
+    api
+      .deleteCard(card._id)
+      .then(
+        () => setCards(cards.filter((item) => item !== card)),
+        (err) => console.error(err)
+      )
+      .finally(() => {
+        setRequest(true);
+      });
+  }
+
+  function handleSignUp() {
+    authApi.signUp({password, email})
   }
 
   React.useEffect(() => {
@@ -111,36 +135,62 @@ function App() {
       })
       .catch((err) => {
         console.error(err);
-      })
-  }, [])
-
-
+      });
+  }, []);
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <Header />
+      <Switch>
+        <Route path="/sign-up">
+          <Register />
+          </Route>;
+        <Route path="/sign-in">
+          <Login />
+        </Route>
+        ;
+        <Route path="/">
+          <Main
+            onEditProfile={handleEditProfileClick}
+            onAddPlace={handleAddPlaceClick}
+            onEditAvatar={handleEditAvatarClick}
+            onCardClick={handleCardClick}
+            onCardDelete={handleCardDelete}
+            onCardLike={handleCardLike}
+            cards={cards}
+          />
 
-      <Main
-        onEditProfile={handleEditProfileClick}
-        onAddPlace={handleAddPlaceClick}
-        onEditAvatar={handleEditAvatarClick}
-        onCardClick={handleCardClick}
-        onCardDelete={handleCardDelete}
-        onCardLike={handleCardLike}
-        cards={cards}
-      />
+          <EditProfilePopup
+            onUpdateUser={handleUpdateUser}
+            isOpen={isEditProfilePopupOpen}
+            onClose={closeAllPopups}
+            request={request}
+          />
 
+          <EditAvatarPopup
+            onUpdateAvatar={handleUpdateAvatar}
+            isOpen={isEditAvatarPopupOpen}
+            onClose={closeAllPopups}
+            request={request}
+          />
+
+          <AddPlacePopup
+            isOpen={isAddPlacePopupOpen}
+            onClose={closeAllPopups}
+            onAddPlace={handleAddPlaceSubmit}
+            request={request}
+          />
+
+          <ImagePopup card={selectedCard} onClose={closeAllPopups} />
+
+          <ConfirmDeletePopup
+            deleteCard={deleteCard}
+            onClose={closeAllPopups}
+            request={request}
+            confirmDelete={handleConfirmDelete}
+          />
+        </Route>
+      </Switch>
       <Footer />
-
-      <EditProfilePopup onUpdateUser={handleUpdateUser} isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} request={request} />
-
-      <EditAvatarPopup onUpdateAvatar={handleUpdateAvatar} isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} request={request} />
-
-      <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit} request={request} />
-
-      <ImagePopup card={selectedCard} onClose={closeAllPopups} />
-
-      <ConfirmDeletePopup deleteCard={deleteCard} onClose={closeAllPopups} request={request} confirmDelete={handleConfirmDelete} />
-
     </CurrentUserContext.Provider>
   );
 }
