@@ -14,7 +14,7 @@ function Main({
   const currentUser = React.useContext(CurrentUserContext);
 
   return (
-    <>
+    <main>
       <section className="profile">
         <div
           onClick={onEditAvatar}
@@ -49,7 +49,7 @@ function Main({
           />
         ))}
       </section>
-    </>
+    </main>
   );
 }
 

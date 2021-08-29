@@ -16,9 +16,7 @@ import * as authApi from "../utils/authApi";
 import ProtectedRoute from "./ProtectedRoute";
 import InfoTooltip from "./InfoTooltip";
 
-
 //Пока отправляю минимальное для сдачи задание, так как не успеваю. Мобиьные стили и пр.(например кастомную валидацию) планирую добавить позже
-
 
 function App() {
   const [currentUser, setCurrentUser] = React.useState({});
@@ -37,7 +35,6 @@ function App() {
   const [email, setEmail] = React.useState("");
 
   const history = useHistory();
-
 
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
@@ -126,10 +123,11 @@ function App() {
     setRequest(false);
     api
       .deleteCard(card._id)
-      .then(
-        () => setCards(cards.filter((item) => item._id !== card._id)),
-        (err) => console.error(err)
-      )
+      .then(() => {
+        setCards(cards.filter((item) => item._id !== card._id));
+        closeAllPopups();
+      })
+      .catch((err) => console.log(err))
       .finally(() => {
         setRequest(true);
       });
@@ -161,30 +159,31 @@ function App() {
       })
       .catch((err) => console.log(err));
   }
-    function onSignOut() {
-      setLoggedIn(false);
-      setEmail('');
-      localStorage.removeItem("JWT");
-      history.push("/sign-in");
-    }
+  function onSignOut() {
+    setLoggedIn(false);
+    setEmail("");
+    localStorage.removeItem("JWT");
+    history.push("/sign-in");
+  }
 
   React.useEffect(() => {
     if (localStorage.getItem("JWT")) {
       authApi
         .checkJWT(localStorage.getItem("JWT"))
         .then((res) => {
-          setEmail(res.email);
+          setEmail(res.data.email);
           setLoggedIn(true);
+          history.push("/");
         })
         .catch((err) => console.error(err));
     }
-  }, []);
+  });
 
   React.useEffect(() => {
     Promise.all([api.getUserInfo(), api.getInitialCards()])
-      .then((res) => {
-        setCurrentUser(res[0]);
-        setCards(res[1]);
+      .then(([userdata, initialCards]) => {
+        setCurrentUser(userdata);
+        setCards(initialCards);
       })
       .catch((err) => {
         console.error(err);
@@ -195,13 +194,6 @@ function App() {
       <Header email={email} onSignOut={onSignOut} />
 
       <Switch>
-        <Route path="/sign-up">
-          <Register signUp={onRegister} />
-        </Route>
-
-        <Route path="/sign-in">
-          <Login signIn={onLogIn} />
-        </Route>
         <ProtectedRoute
           exact
           path="/"
@@ -215,7 +207,15 @@ function App() {
           onCardLike={handleCardLike}
           cards={cards}
         />
-        <Route path="/">
+        <Route path="/sign-up">
+          <Register signUp={onRegister} />
+        </Route>
+
+        <Route path="/sign-in">
+          <Login signIn={onLogIn} />
+        </Route>
+
+        <Route path="*">
           {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
         </Route>
       </Switch>
