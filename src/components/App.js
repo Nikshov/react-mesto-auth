@@ -174,7 +174,6 @@ function App() {
           setEmail(res.data.email);
           setLoggedIn(true);
           history.push("/");
-          console.log('asssss');
         })
         .catch((err) => console.error(err));
     }
