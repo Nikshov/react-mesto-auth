@@ -207,15 +207,15 @@ function App() {
           onCardLike={handleCardLike}
           cards={cards}
         />
-        <Route path="/sign-up">
+        <Route exact path="/sign-up">
           <Register signUp={onRegister} />
         </Route>
 
-        <Route path="/sign-in">
+        <Route exact path="/sign-in">
           <Login signIn={onLogIn} />
         </Route>
 
-        <Route path="*">
+        <Route path="/">
           {loggedIn ? <Redirect to="/" /> : <Redirect to="/sign-in" />}
         </Route>
       </Switch>
