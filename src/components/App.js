@@ -174,10 +174,11 @@ function App() {
           setEmail(res.data.email);
           setLoggedIn(true);
           history.push("/");
+          console.log('asssss');
         })
         .catch((err) => console.error(err));
     }
-  });
+  }, [history, loggedIn]);
 
   React.useEffect(() => {
     Promise.all([api.getUserInfo(), api.getInitialCards()])
