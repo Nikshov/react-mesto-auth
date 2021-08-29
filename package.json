@@ -1,6 +1,6 @@
 {
-  "name": "mesto-react",
-  "homepage": "https://nikshov.github.io/mesto-react/",
+  "name": "react-mesto-auth",
+  "homepage": "https://nikshov.github.io/react-mesto-auth/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -39,5 +39,16 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "description": "[GitHub Pages](https://nikshov.github.io/mesto-react/)  \r [Репозиторий](https://github.com/Nikshov/react-mesto-auth.git)",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nikshov/react-mesto-auth.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Nikshov/react-mesto-auth/issues"
   }
 }
