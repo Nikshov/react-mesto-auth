@@ -1,8 +1,6 @@
-# Реализация проектной работы «Место» с авторизацией и регистрацией на React
+# Фронт проекта Место с авторизацией
 
 ## Использовались JSX, CSS, JS.
-
-### Знакомство с React.
 
 [GitHub Pages](https://nikshov.github.io/mesto-react/)  
 [Репозиторий](https://github.com/Nikshov/react-mesto-auth.git)
